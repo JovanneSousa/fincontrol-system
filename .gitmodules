@@ -1,0 +1,15 @@
+[submodule "fin-api"]
+	path = fin-api
+	url = https://github.com/jovannesousa/fin-api
+[submodule "auth"]
+	path = auth
+	url = https://github.com/jovannesousa/auth
+[submodule "email-sender"]
+	path = email-sender
+	url = https://github.com/jovannesousa/email-sender
+[submodule "messagebus"]
+	path = messagebus
+	url = https://github.com/jovannesousa/messagebus
+[submodule "fin"]
+	path = fin
+	url = https://github.com/jovannesousa/fin
