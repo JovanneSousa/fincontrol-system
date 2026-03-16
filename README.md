@@ -1,174 +1,174 @@
 # FinControl System
 
-FinControl System is a professional, modular distributed platform designed for comprehensive financial management. The system is built using a microservices-oriented architecture, leveraging a diverse technology stack including .NET, Java, and React to ensure scalability, maintainability, and high performance.
+O FinControl System é uma plataforma profissional e modular de gestão financeira distribuída. O sistema foi construído utilizando uma arquitetura orientada a microserviços, aproveitando uma pilha tecnológica diversificada que inclui .NET, Java e React para garantir escalabilidade, manutenibilidade e alta performance.
 
-The platform enables users to manage financial transactions, categorize expenses, and receive automated notifications, all within a secure environment powered by JWT authentication and event-driven communication.
+A plataforma permite que os usuários gerenciem transações financeiras, categorizem despesas e recebam notificações automatizadas, tudo dentro de um ambiente seguro alimentado por autenticação JWT e comunicação baseada em eventos.
 
 ---
 
-## 1. System Architecture
+## 1. Arquitetura do Sistema
 
-The FinControl System follows a distributed architecture where services are decoupled and communicate through standardized interfaces. The architecture prioritizes separation of concerns, with dedicated services for business logic, identity management, and background processing.
+O FinControl System segue uma arquitetura distribuída onde os serviços são desacoplados e se comunicam através de interfaces padronizadas. A arquitetura prioriza a separação de responsabilidades, com serviços dedicados para lógica de negócio, gerenciamento de identidade e processamento em segundo plano.
 
-### High-Level Architecture Flow
+### Fluxo de Arquitetura de Alto Nível
 
 ```mermaid
 graph TD
-    subgraph "Frontend Layer"
+    subgraph "Camada de Frontend"
         ReactApp["React Frontend (Fin)"]
     end
 
-    subgraph "Service Layer"
+    subgraph "Camada de Serviços"
         FinAPI["Fin API (.NET)"]
         AuthService["Auth Service (.NET Identity)"]
     end
 
-    subgraph "Messaging & Integration"
+    subgraph "Mensageria e Integração"
         RabbitMQ["RabbitMQ (Message Broker)"]
-        MessageBus["MessageBus Library"]
+        MessageBus["Biblioteca MessageBus"]
     end
 
-    subgraph "Microservices"
+    subgraph "Microserviços"
         EmailSender["Email Sender (Java Spring Boot)"]
     end
 
-    subgraph "Data Layer"
+    subgraph "Camada de Dados"
         PostgreSQL[("PostgreSQL")]
     end
 
     ReactApp -->|REST / JWT| FinAPI
     ReactApp -->|REST / JWT| AuthService
-    FinAPI -->|Internal Communication| AuthService
-    FinAPI -->|Publish Events| RabbitMQ
-    AuthService -->|Publish Events| RabbitMQ
-    RabbitMQ -->|Consume Events| EmailSender
+    FinAPI -->|Comunicação Interna| AuthService
+    FinAPI -->|Publica Eventos| RabbitMQ
+    AuthService -->|Publica Eventos| RabbitMQ
+    RabbitMQ -->|Consome Eventos| EmailSender
     FinAPI --> PostgreSQL
     AuthService --> PostgreSQL
-    EmailSender -.->|SMTP| UserEmail["User Inbox"]
+    EmailSender -.->|SMTP| UserEmail["Caixa de Entrada do Usuário"]
 ```
 
 ---
 
-## 2. Repository Structure
+## 2. Estrutura do Repositório
 
-This repository acts as a **system orchestrator**, utilizing **Git submodules** to aggregate independent services into a single unified workspace.
+Este repositório atua como um **orquestrador do sistema**, utilizando **Git submodules** para agregar serviços independentes em um único espaço de trabalho unificado.
 
 ```text
-fincontrol-system (Root)
+fincontrol-system (Raiz)
 │
-├── fin-api          # Main Backend (Business Logic)
-├── auth             # Identity & Access Management
-├── email-sender     # Asynchronous Notification Service
-├── messagebus       # Shared Messaging Library
-└── fin              # React TypeScript Frontend
+├── fin-api          # Backend Principal (Lógica de Negócio)
+├── auth             # Gerenciamento de Identidade e Acesso
+├── email-sender     # Serviço de Notificação Assíncrona
+├── messagebus       # Biblioteca de Mensageria Compartilhada
+└── fin              # Frontend em React TypeScript
 ```
 
 ---
 
-## 3. Services Description
+## 3. Descrição dos Serviços
 
 ### 💰 Fin API
-The core backend service responsible for financial operations. It manages accounts, transactions, and categories, enforcing business rules and ensuring data integrity. It integrates with the MessageBus to trigger external actions based on financial events.
+O serviço backend principal responsável pelas operações financeiras. Gerencia contas, transações e categorias, aplicando regras de negócio e garantindo a integridade dos dados. Integra-se com o MessageBus para disparar ações externas baseadas em eventos financeiros.
 
 ### 🔐 Auth Service
-A dedicated security service built on ASP.NET Core Identity. It handles user registration, authentication, and token issuance (JWT). It ensures that all communication within the ecosystem is secure and authorized.
+Um serviço de segurança dedicado construído com ASP.NET Core Identity. Responsável pelo registro de usuários, autenticação e emissão de tokens (JWT). Garante que toda a comunicação dentro do ecossistema seja segura e autorizada.
 
 ### 📧 Email Sender
-A Java Spring Boot microservice that operates as a background consumer. It listens to specific queues in RabbitMQ and dispatches email notifications (e.g., welcome emails, transaction alerts) asynchronously, ensuring the main APIs remain responsive.
+Um microserviço Java Spring Boot que opera como um consumidor em segundo plano. Ele escuta filas específicas no RabbitMQ e envia notificações por e-mail (ex: e-mails de boas-vindas, alertas de transação) de forma assíncrona, garantindo que as APIs principais permaneçam responsivas.
 
 ### 🚌 MessageBus
-A specialized .NET library that standardizes integration patterns across the ecosystem. It provides a robust abstraction over RabbitMQ, facilitating the "Publish-Subscribe" pattern for event-driven communication.
+Uma biblioteca .NET especializada que padroniza os padrões de integração em todo o ecossistema. Fornece uma abraçãom robusta sobre o RabbitMQ, facilitando o padrão "Publish-Subscribe" para comunicação baseada em eventos.
 
 ### 💻 Fin (Frontend)
-A modern, responsive user interface built with React and TypeScript. It provides a seamless experience for users to interact with their financial data, featuring real-time updates and interactive dashboards.
+Uma interface de usuário moderna e responsiva construída com React e TypeScript. Oferece uma experiência fluida para os usuários interagirem com seus dados financeiros, apresentando atualizações em tempo real e dashboards interativos.
 
 ---
 
-## 4. Technologies Used
+## 4. Tecnologias Utilizadas
 
-| Category | Technologies |
+| Categoria | Tecnologias |
 | :--- | :--- |
 | **Backend** | .NET 8, ASP.NET Core, Java 17, Spring Boot |
 | **Frontend** | React, TypeScript, Vite, CSS/Styled Components |
-| **Messaging** | RabbitMQ |
-| **Database** | PostgreSQL, Entity Framework Core (EF Core) |
-| **DevOps** | Docker, Docker Compose |
-| **Auth** | JWT (JSON Web Tokens), ASP.NET Identity |
+| **Mensageria** | RabbitMQ |
+| **Banco de Dados** | PostgreSQL, Entity Framework Core (EF Core) |
+| **Infraestrutura** | Docker, Docker Compose |
+| **Segurança** | JWT (JSON Web Tokens), ASP.NET Identity |
 
 ---
 
-## 5. System Flow
+## 5. Fluxo do Sistema
 
-The following sequence diagram illustrates the standard flow for a secure transaction that triggers a notification:
+O diagrama de sequência a seguir ilustra o fluxo padrão para uma transação segura que dispara uma notificação:
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant User as User
+    participant Usuario as Usuário
     participant Fin as React Frontend
     participant Auth as Auth Service
     participant API as Fin API
     participant Bus as RabbitMQ
     participant Email as Email Sender
 
-    User->>Fin: Login Credentials
+    Usuario->>Fin: Credenciais de Login
     Fin->>Auth: POST /authenticate
-    Auth-->>Fin: 200 OK (JWT Token)
+    Auth-->>Fin: 200 OK (Token JWT)
 
-    User->>Fin: Create Transaction
-    Fin->>API: POST /transactions (with JWT)
-    API->>API: Validate & Save to DB
-    API->>Bus: Publish 'TransactionCreatedEvent'
+    Usuario->>Fin: Criar Transação
+    Fin->>API: POST /transactions (com JWT)
+    API->>API: Validar e Salvar no Banco
+    API->>Bus: Publicar 'TransactionCreatedEvent'
     API-->>Fin: 201 Created
 
-    Bus->>Email: Deliver Message
-    Email->>Email: Process Template
-    Email-->>User: Send Notification Email
+    Bus->>Email: Entregar Mensagem
+    Email->>Email: Processar Template
+    Email-->>Usuario: Enviar E-mail de Notificação
 ```
 
 ---
 
-## 6. Running the System Locally
+## 6. Executando o Sistema Localmente
 
-### Prerequisites
+### Pré-requisitos
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 * [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 * [Java 17 (JDK)](https://adoptium.net/)
 * [Node.js (v18+)](https://nodejs.org/)
 
-### Setup Instructions
+### Instruções de Configuração
 
-1.  **Clone the repository with submodules:**
+1.  **Clone o repositório com os sub-módulos:**
     ```bash
     git clone --recurse-submodules https://github.com/jovannesousa/fincontrol-system.git
     cd fincontrol-system
     ```
 
-2.  **Initialize/Update submodules (if cloned without `--recurse-submodules`):**
+2.  **Inicialize/Atualize os sub-módulos (caso tenha clonado sem `--recurse-submodules`):**
     ```bash
     git submodule update --init --recursive
     ```
 
-3.  **Infrastructure (Database & Messaging):**
-    Use Docker Compose to spin up the required infrastructure:
+3.  **Infraestrutura (Banco de Dados e Mensageria):**
+    Utilize o Docker Compose para subir a infraestrutura necessária:
     ```bash
     docker-compose up -d
     ```
 
-4.  **Running Services:**
-    Each service can be started from its respective directory:
-    * **Auth/Fin API:** `dotnet run` inside the project folders.
+4.  **Executando os Serviços:**
+    Cada serviço pode ser iniciado a partir de seu respectivo diretório:
+    * **Auth/Fin API:** `dotnet run` dentro das pastas dos projetos.
     * **Email Sender:** `./mvnw spring-boot:run`
     * **Frontend:** `npm install && npm run dev`
 
 ---
 
-## 7. Development Notes
+## 7. Notas de Desenvolvimento
 
-*   **Service Independence:** Each module is a self-contained repository and can be deployed or scaled independently.
-*   **Asynchronous Patterns:** The system heavily utilizes asynchronous messaging to decouple high-latency tasks (like email sending) from the user-facing request cycle.
-*   **Security:** All API endpoints (except login/register) require a valid Bearer Token issued by the Auth Service.
-*   **Extensibility:** The modular nature of the architecture allows for new consumers (e.g., SMS sender, Analytics service) to be added simply by subscribing to existing RabbitMQ exchanges.
+*   **Independência de Serviços:** Cada módulo é um repositório autônomo e pode ser implantado ou escalado de forma independente.
+*   **Padrões Assíncronos:** O sistema utiliza intensamente mensageria assíncrona para desacoplar tarefas de alta latência (como envio de e-mail) do ciclo de requisição do usuário.
+*   **Segurança:** Todos os endpoints da API (exceto login/registro) exigem um Bearer Token válido emitido pelo Auth Service.
+*   **Extensibilidade:** A natureza modular da arquitetura permite que novos consumidores (ex: serviço de SMS, serviço de Analytics) sejam adicionados simplesmente assinando as exchanges existentes do RabbitMQ.
 
 ---
-Developed by [Jovanne Sousa](https://github.com/jovannesousa)
+Desenvolvido por [Jovanne Sousa](https://github.com/jovannesousa)
